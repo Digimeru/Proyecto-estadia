@@ -1,32 +1,47 @@
 import "./Login.css";
+import FeatureCard from "../../components/FeatureCard/FeatureCard";
+import logo from "../../assets/images/logo.png";
 
 function Login() {
   return (
     <div className="login-container">
 
       {/* Panel izquierdo */}
-      <div className="left-panel">
+      <section className="left-panel">
+  <div className="brand-content">
 
-        <div className="logo-section">
-          <h1>DocenSys</h1>
-          <p>Sistema de Gestión Académica</p>
-        </div>
+  <img
+    src={logo}
+    alt="DocenSys"
+    className="logo"
+  />
 
-        <div className="features">
-          <div className="feature-card">
-            Control de Asistencias
-          </div>
+  <p className="brand-description">
+    Sistema digital para el seguimiento y evaluación
+    de actividades académicas por parciales.
+  </p>
 
-          <div className="feature-card">
-            Registro de Calificaciones
-          </div>
+  <div className="features">
 
-          <div className="feature-card">
-            Reportes Institucionales
-          </div>
-        </div>
+    <FeatureCard
+      title="Control de Asistencias"
+      description="Registra la asistencia de docentes por fecha y parcial."
+    />
 
-      </div>
+    <FeatureCard
+      title="Registro de Calificaciones"
+      description="Consulta y administra calificaciones de forma sencilla."
+    />
+
+    <FeatureCard
+      title="Reportes Académicos"
+      description="Genera reportes para el seguimiento académico."
+    />
+
+  </div>
+
+</div>
+</section>
 
       {/* Panel derecho */}
       <div className="right-panel">
