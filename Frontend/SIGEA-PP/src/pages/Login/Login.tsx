@@ -1,8 +1,10 @@
 import "./Login.css";
 import FeatureCard from "../../components/FeatureCard/FeatureCard";
 import logo from "../../assets/images/logo.png";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
   return (
     <div className="login-container">
 
@@ -63,6 +65,16 @@ function Login() {
           <button>
             Iniciar sesión
           </button>
+
+          <div className="dev-buttons">
+    <button onClick={() => navigate("/docente")}>
+        Docente
+    </button>
+
+    <button onClick={() => navigate("/admin")}>
+        Administrador
+    </button>
+</div>
 
         </div>
 

@@ -155,3 +155,41 @@
 
   margin-bottom: 45px;
 }
+
+.dev-buttons{
+
+    margin-top:20px;
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.dev-buttons button{
+
+    flex:1;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    background:#3B82F6;
+
+    color:white;
+
+    font-weight:600;
+
+    transition:.2s;
+
+}
+
+.dev-buttons button:hover{
+
+    transform:translateY(-2px);
+
+}
