@@ -136,6 +136,8 @@
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    margin-left: 15rem;
+    width: calc(100vw - 15rem);
 }
 
 /* BARRA SUPERIOR (TOPBAR) */
@@ -218,7 +220,7 @@
 
 /* CUERPO INTERNO DEL DASHBOARD */
 .dashboard-body {
-    padding: 32px;
+    padding: 5rem 32px 32px;
     overflow-y: auto;
     flex: 1;
     box-sizing: border-box;

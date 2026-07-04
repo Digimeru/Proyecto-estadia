@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
-import Login from "./pages/Login/Login";
-import DashboardAdmin from "./pages/Admin/DashboardAdmin";
-import DashboardDocente from "./pages/Docente/DashboardDocente";
+import Login from "./pages/login/Login";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
+import DashboardDocente from "./pages/docente/DashboardDocente";
 
 function App() {
   return (
