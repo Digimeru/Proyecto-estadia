@@ -20,20 +20,15 @@ export const calificacionesIniciales = [
   { tareas: 8, examen: 8, proyecto: 7, actitud: 9 },
 ];
 
-export function calcularFinal(
-  tareas: number,
-  examen: number,
-  proyecto: number,
-  actitud: number,
-  tareasPct = 20,
-  examenPct = 40,
-  proyectoPct = 30,
-  actitudPct = 10
-) {
-  return (
-    tareas * (tareasPct / 100) +
-    examen * (examenPct / 100) +
-    proyecto * (proyectoPct / 100) +
-    actitud * (actitudPct / 100)
-  );
+type RubricaItem = {
+  id: string;
+  label: string;
+  value: number;
+};
+
+export function calcularFinal(calificacion: Record<string, number>, rubrica: RubricaItem[]) {
+  return rubrica.reduce((acc, item) => {
+    const score = calificacion[item.id] ?? 0;
+    return acc + score * (item.value / 100);
+  }, 0);
 }

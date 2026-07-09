@@ -961,11 +961,59 @@
   border-radius: 14px;
 }
 
-.rubric-label {
+.rubric-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: 1;
+}
+
+.rubric-icon-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.rubric-icon-btn:hover {
+  background: rgba(59, 130, 246, 0.08);
+  color: #1d4ed8;
+}
+
+.rubric-label-text {
   color: #334155;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
+}
+
+.rubric-label-edit-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.rubric-label-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: white;
+}
+
+.rubric-label-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .rubric-field {

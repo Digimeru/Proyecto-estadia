@@ -5,23 +5,22 @@ import {
   ChevronDown,
   TrendingUp,
   Save,
+  Trash2,
+  Edit3,
+  Check,
+  X,
 } from "lucide-react";
 import { alumnos, calificacionesIniciales, calcularFinal } from "./docenteData";
 
 type Parcial = "1P" | "2P" | "3P";
 
 type RubricaItem = {
-  id: "tareas" | "examen" | "proyecto" | "actitud";
+  id: string;
   label: string;
   value: number;
 };
 
-interface Calificacion {
-  tareas: number;
-  examen: number;
-  proyecto: number;
-  actitud: number;
-}
+type Calificacion = Record<string, number>;
 
 const parciales: { id: Parcial; label: string }[] = [
   { id: "1P", label: "1P — Primer Parcial" },
@@ -43,23 +42,15 @@ function RegistroCalificaciones() {
   );
   const [rubrica, setRubrica] = useState<RubricaItem[]>(rubricaInicial);
   const [showRubrica, setShowRubrica] = useState(true);
-
-  const porcentajeMap = useMemo(
-    () => ({
-      tareas: rubrica.find((item) => item.id === "tareas")?.value ?? 20,
-      examen: rubrica.find((item) => item.id === "examen")?.value ?? 40,
-      proyecto: rubrica.find((item) => item.id === "proyecto")?.value ?? 30,
-      actitud: rubrica.find((item) => item.id === "actitud")?.value ?? 10,
-    }),
-    [rubrica]
-  );
+  const [editingLabelId, setEditingLabelId] = useState<string | null>(null);
+  const [labelDraft, setLabelDraft] = useState("");
 
   const totalPorcentaje = useMemo(
     () => rubrica.reduce((acc, item) => acc + item.value, 0),
     [rubrica]
   );
 
-  const updatePorcentaje = (id: RubricaItem["id"], value: number) => {
+  const updatePorcentaje = (id: string, value: number) => {
     setRubrica((prev) => {
       const othersTotal = prev
         .filter((item) => item.id !== id)
@@ -72,22 +63,56 @@ function RegistroCalificaciones() {
     });
   };
 
-  const promedioParcial = useMemo(() => {
-    const finales = calificaciones.map((c) =>
-      calcularFinal(
-        c.tareas,
-        c.examen,
-        c.proyecto,
-        c.actitud,
-        porcentajeMap.tareas,
-        porcentajeMap.examen,
-        porcentajeMap.proyecto,
-        porcentajeMap.actitud
+  const addNewActivity = () => {
+    const nextId = `actividad-${Date.now()}`;
+    setRubrica((prev) => [
+      ...prev,
+      { id: nextId, label: "Nueva actividad", value: 0 },
+    ]);
+    setCalificaciones((prev) =>
+      prev.map((row) => ({ ...row, [nextId]: 0 }))
+    );
+  };
+
+  const removeRubricaItem = (id: string) => {
+    setRubrica((prev) => prev.filter((item) => item.id !== id));
+    setCalificaciones((prev) =>
+      prev.map((row) => {
+        const nextRow = { ...row };
+        delete nextRow[id];
+        return nextRow;
+      })
+    );
+    if (editingLabelId === id) {
+      setEditingLabelId(null);
+      setLabelDraft("");
+    }
+  };
+
+  const startEditingLabel = (id: string, label: string) => {
+    setEditingLabelId(id);
+    setLabelDraft(label);
+  };
+
+  const saveLabel = (id: string) => {
+    setRubrica((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, label: labelDraft || item.label } : item
       )
     );
+    setEditingLabelId(null);
+  };
+
+  const cancelLabelEdit = () => {
+    setEditingLabelId(null);
+    setLabelDraft("");
+  };
+
+  const promedioParcial = useMemo(() => {
+    const finales = calificaciones.map((c) => calcularFinal(c, rubrica));
     const suma = finales.reduce((acc, v) => acc + v, 0);
     return (suma / finales.length).toFixed(1);
-  }, [calificaciones, porcentajeMap]);
+  }, [calificaciones, rubrica]);
 
   const updateCalificacion = (
     index: number,
@@ -119,9 +144,13 @@ function RegistroCalificaciones() {
             onClick={() => setShowRubrica((prev) => !prev)}
           >
             <Settings size={16} />
-            Definir rúbrica y porcentajes
+            {showRubrica ? "Ocultar rúbrica" : "Definir rúbrica y porcentajes"}
           </button>
-          <button type="button" className="btn-primary">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={addNewActivity}
+          >
             <Plus size={16} />
             Nueva Actividad
           </button>
@@ -147,9 +176,58 @@ function RegistroCalificaciones() {
           <div className="rubric-grid">
             {rubrica.map((item) => (
               <div key={item.id} className="rubric-row">
-                <label htmlFor={`rubrica-${item.id}`} className="rubric-label">
-                  {item.label}
-                </label>
+                <div className="rubric-label-row">
+                  <button
+                    type="button"
+                    className="rubric-icon-btn"
+                    onClick={() => removeRubricaItem(item.id)}
+                    aria-label={`Eliminar ${item.label}`}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                  {editingLabelId === item.id ? (
+                    <div className="rubric-label-edit-group">
+                      <input
+                        type="text"
+                        className="rubric-label-input"
+                        value={labelDraft}
+                        onChange={(e) => setLabelDraft(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveLabel(item.id);
+                          if (e.key === "Escape") cancelLabelEdit();
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="rubric-icon-btn"
+                        onClick={() => saveLabel(item.id)}
+                        aria-label="Guardar nombre"
+                      >
+                        <Check size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        className="rubric-icon-btn"
+                        onClick={cancelLabelEdit}
+                        aria-label="Cancelar edición"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="rubric-label-text">{item.label}</span>
+                      <button
+                        type="button"
+                        className="rubric-icon-btn"
+                        onClick={() => startEditingLabel(item.id, item.label)}
+                        aria-label={`Editar ${item.label}`}
+                      >
+                        <Edit3 size={16} />
+                      </button>
+                    </>
+                  )}
+                </div>
                 <div className="rubric-field">
                   <input
                     id={`rubrica-${item.id}`}
@@ -198,26 +276,18 @@ function RegistroCalificaciones() {
               <tr>
                 <th>Alumno</th>
                 <th>Asistencia</th>
-                <th>{rubrica[0].label} {porcentajeMap.tareas}%</th>
-                <th>{rubrica[1].label} {porcentajeMap.examen}%</th>
-                <th>{rubrica[2].label} {porcentajeMap.proyecto}%</th>
-                <th>{rubrica[3].label} {porcentajeMap.actitud}%</th>
+                {rubrica.map((item) => (
+                  <th key={item.id}>
+                    {item.label} {item.value}%
+                  </th>
+                ))}
                 <th>Final</th>
               </tr>
             </thead>
             <tbody>
               {alumnos.map((alumno, index) => {
                 const cal = calificaciones[index];
-                const final = calcularFinal(
-                  cal.tareas,
-                  cal.examen,
-                  cal.proyecto,
-                  cal.actitud,
-                  porcentajeMap.tareas,
-                  porcentajeMap.examen,
-                  porcentajeMap.proyecto,
-                  porcentajeMap.actitud
-                );
+                const final = calcularFinal(cal, rubrica);
 
                 return (
                   <tr key={alumno.id}>
@@ -234,54 +304,20 @@ function RegistroCalificaciones() {
                         <span className="attendance-mini attendance-mini--yellow">J</span>
                       </div>
                     </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="grade-input"
-                        min={0}
-                        max={10}
-                        value={cal.tareas}
-                        onChange={(e) =>
-                          updateCalificacion(index, "tareas", Number(e.target.value))
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="grade-input"
-                        min={0}
-                        max={10}
-                        value={cal.examen}
-                        onChange={(e) =>
-                          updateCalificacion(index, "examen", Number(e.target.value))
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="grade-input"
-                        min={0}
-                        max={10}
-                        value={cal.proyecto}
-                        onChange={(e) =>
-                          updateCalificacion(index, "proyecto", Number(e.target.value))
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="grade-input"
-                        min={0}
-                        max={10}
-                        value={cal.actitud}
-                        onChange={(e) =>
-                          updateCalificacion(index, "actitud", Number(e.target.value))
-                        }
-                      />
-                    </td>
+                    {rubrica.map((item) => (
+                  <td key={item.id}>
+                    <input
+                      type="number"
+                      className="grade-input"
+                      min={0}
+                      max={10}
+                      value={cal[item.id] ?? 0}
+                      onChange={(e) =>
+                        updateCalificacion(index, item.id, Number(e.target.value))
+                      }
+                    />
+                  </td>
+                ))}
                     <td>
                       <span className="grade-final">{final.toFixed(1)}</span>
                     </td>
