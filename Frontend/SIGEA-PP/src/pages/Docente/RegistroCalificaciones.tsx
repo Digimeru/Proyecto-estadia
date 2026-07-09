@@ -10,6 +10,12 @@ import { alumnos, calificacionesIniciales, calcularFinal } from "./docenteData";
 
 type Parcial = "1P" | "2P" | "3P";
 
+type RubricaItem = {
+  id: "tareas" | "examen" | "proyecto" | "actitud";
+  label: string;
+  value: number;
+};
+
 interface Calificacion {
   tareas: number;
   examen: number;
@@ -23,19 +29,65 @@ const parciales: { id: Parcial; label: string }[] = [
   { id: "3P", label: "3P — Tercer Parcial" },
 ];
 
+const rubricaInicial: RubricaItem[] = [
+  { id: "tareas", label: "Tareas", value: 20 },
+  { id: "examen", label: "Examen", value: 40 },
+  { id: "proyecto", label: "Proyecto", value: 30 },
+  { id: "actitud", label: "Actitud", value: 10 },
+];
+
 function RegistroCalificaciones() {
   const [parcialActivo, setParcialActivo] = useState<Parcial>("1P");
   const [calificaciones, setCalificaciones] = useState<Calificacion[]>(
     calificacionesIniciales.map((c) => ({ ...c }))
   );
+  const [rubrica, setRubrica] = useState<RubricaItem[]>(rubricaInicial);
+  const [showRubrica, setShowRubrica] = useState(true);
+
+  const porcentajeMap = useMemo(
+    () => ({
+      tareas: rubrica.find((item) => item.id === "tareas")?.value ?? 20,
+      examen: rubrica.find((item) => item.id === "examen")?.value ?? 40,
+      proyecto: rubrica.find((item) => item.id === "proyecto")?.value ?? 30,
+      actitud: rubrica.find((item) => item.id === "actitud")?.value ?? 10,
+    }),
+    [rubrica]
+  );
+
+  const totalPorcentaje = useMemo(
+    () => rubrica.reduce((acc, item) => acc + item.value, 0),
+    [rubrica]
+  );
+
+  const updatePorcentaje = (id: RubricaItem["id"], value: number) => {
+    setRubrica((prev) => {
+      const othersTotal = prev
+        .filter((item) => item.id !== id)
+        .reduce((acc, item) => acc + item.value, 0);
+      const maxAllowed = Math.max(0, 100 - othersTotal);
+      const nextValue = Math.min(maxAllowed, Math.max(0, value));
+      return prev.map((item) =>
+        item.id === id ? { ...item, value: nextValue } : item
+      );
+    });
+  };
 
   const promedioParcial = useMemo(() => {
     const finales = calificaciones.map((c) =>
-      calcularFinal(c.tareas, c.examen, c.proyecto, c.actitud)
+      calcularFinal(
+        c.tareas,
+        c.examen,
+        c.proyecto,
+        c.actitud,
+        porcentajeMap.tareas,
+        porcentajeMap.examen,
+        porcentajeMap.proyecto,
+        porcentajeMap.actitud
+      )
     );
     const suma = finales.reduce((acc, v) => acc + v, 0);
     return (suma / finales.length).toFixed(1);
-  }, [calificaciones]);
+  }, [calificaciones, porcentajeMap]);
 
   const updateCalificacion = (
     index: number,
@@ -61,7 +113,11 @@ function RegistroCalificaciones() {
             <span>Grupo: 3°A</span>
             <ChevronDown size={14} color="#8b94a8" />
           </div>
-          <button type="button" className="btn-outline">
+          <button
+            type="button"
+            className="btn-outline"
+            onClick={() => setShowRubrica((prev) => !prev)}
+          >
             <Settings size={16} />
             Definir rúbrica y porcentajes
           </button>
@@ -72,7 +128,49 @@ function RegistroCalificaciones() {
         </div>
       </div>
 
-      <div className="data-panel grades-panel">
+      {showRubrica && (
+        <div className="rubric-card rubric-card--visible">
+          <div className="rubric-header">
+            <div className="rubric-title-group">
+              <h3>Rúbrica de evaluación</h3>
+              <p>Define los porcentajes de cada criterio para este parcial.</p>
+            </div>
+            <div
+              className={`rubric-total${
+                totalPorcentaje === 100 ? "" : " rubric-total--invalid"
+              }`}
+            >
+              Total: {totalPorcentaje}%
+            </div>
+          </div>
+
+          <div className="rubric-grid">
+            {rubrica.map((item) => (
+              <div key={item.id} className="rubric-row">
+                <label htmlFor={`rubrica-${item.id}`} className="rubric-label">
+                  {item.label}
+                </label>
+                <div className="rubric-field">
+                  <input
+                    id={`rubrica-${item.id}`}
+                    type="number"
+                    className="rubric-input"
+                    min={0}
+                    max={100}
+                    value={item.value}
+                    onChange={(e) =>
+                      updatePorcentaje(item.id, Number(e.target.value))
+                    }
+                  />
+                  <span className="rubric-percent">%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="data-panel grades-panel grades-panel--with-rubric">
         <div className="grades-tabs-row">
           <div className="grades-tabs">
             {parciales.map((p) => (
@@ -100,10 +198,10 @@ function RegistroCalificaciones() {
               <tr>
                 <th>Alumno</th>
                 <th>Asistencia</th>
-                <th>Tareas 20%</th>
-                <th>Examen 40%</th>
-                <th>Proyecto 30%</th>
-                <th>Actitud 10%</th>
+                <th>{rubrica[0].label} {porcentajeMap.tareas}%</th>
+                <th>{rubrica[1].label} {porcentajeMap.examen}%</th>
+                <th>{rubrica[2].label} {porcentajeMap.proyecto}%</th>
+                <th>{rubrica[3].label} {porcentajeMap.actitud}%</th>
                 <th>Final</th>
               </tr>
             </thead>
@@ -114,7 +212,11 @@ function RegistroCalificaciones() {
                   cal.tareas,
                   cal.examen,
                   cal.proyecto,
-                  cal.actitud
+                  cal.actitud,
+                  porcentajeMap.tareas,
+                  porcentajeMap.examen,
+                  porcentajeMap.proyecto,
+                  porcentajeMap.actitud
                 );
 
                 return (

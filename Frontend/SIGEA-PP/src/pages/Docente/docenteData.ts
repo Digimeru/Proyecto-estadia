@@ -20,6 +20,20 @@ export const calificacionesIniciales = [
   { tareas: 8, examen: 8, proyecto: 7, actitud: 9 },
 ];
 
-export function calcularFinal(tareas: number, examen: number, proyecto: number, actitud: number) {
-  return tareas * 0.2 + examen * 0.4 + proyecto * 0.3 + actitud * 0.1;
+export function calcularFinal(
+  tareas: number,
+  examen: number,
+  proyecto: number,
+  actitud: number,
+  tareasPct = 20,
+  examenPct = 40,
+  proyectoPct = 30,
+  actitudPct = 10
+) {
+  return (
+    tareas * (tareasPct / 100) +
+    examen * (examenPct / 100) +
+    proyecto * (proyectoPct / 100) +
+    actitud * (actitudPct / 100)
+  );
 }

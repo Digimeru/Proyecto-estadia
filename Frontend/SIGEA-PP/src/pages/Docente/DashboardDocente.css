@@ -852,6 +852,10 @@
   margin-top: 0;
 }
 
+.grades-panel--with-rubric {
+  margin-top: 32px;
+}
+
 .grades-tabs-row {
   display: flex;
   align-items: center;
@@ -897,6 +901,100 @@
   color: #8b94a8;
   font-size: 0.82rem;
   padding: 12px 0;
+}
+
+.rubric-card {
+  margin-top: 24px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 12px rgba(26, 39, 68, 0.05);
+  padding: 22px 24px;
+}
+
+.rubric-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rubric-title-group {
+  text-align: left;
+}
+
+.rubric-header h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.rubric-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.rubric-total {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.rubric-total--invalid {
+  color: #ef4444;
+}
+
+.rubric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rubric-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 14px;
+}
+
+.rubric-label {
+  flex: 1;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.rubric-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rubric-input {
+  width: 72px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rubric-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.rubric-percent {
+  color: #3b82f6;
+  font-weight: 700;
 }
 
 .grades-average strong {
