@@ -8,23 +8,104 @@ import {
   ChevronDown,
   Calendar,
 } from "lucide-react";
+import "./DashboardDocente.css";
 import { alumnos } from "./docenteData";
 
 type AttendanceStatus = "asistencia" | "falta" | "justificado" | null;
 
+type FilterSelectProps = {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  icon?: React.ReactNode;
+  ariaLabel: string;
+};
+
+function FilterSelect({ value, options, onChange, icon, ariaLabel }: FilterSelectProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="filter-select" style={{ position: "relative" }}>
+      <button
+        type="button"
+        aria-label={ariaLabel}
+        onClick={() => setOpen((current) => !current)}
+        className="filter-select-button"
+      >
+        {icon}
+        <span>{value}</span>
+        <ChevronDown size={14} color="#8b94a8" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+      </button>
+      {open && (
+        <>
+          <div
+            className="select-overlay"
+            onClick={() => setOpen(false)}
+          />
+          <div className="select-dropdown">
+            {options.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  onChange(option);
+                  setOpen(false);
+                }}
+                className={`select-dropdown-item${option === value ? " selected" : ""}`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function ControlAsistencias() {
+  const groups = [
+    "Todos los grupos",
+    "Grupo A",
+    "Grupo B",
+    "Grupo C",
+    "Grupo D",
+    "Grupo E",
+    "Grupo F",
+  ];
+  const materias = [
+    "Todas las materias",
+    "Matemáticas",
+    "Historia",
+    "Ciencias",
+    "Inglés",
+    "Química",
+    "Física",
+    "Español",
+    "Educación Física",
+  ];
+  const dateOptions = ["Hoy", "Esta semana", "Este mes", "Personalizada"];
+
   const [attendance, setAttendance] = useState<Record<number, AttendanceStatus>>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState(groups[0]);
+  const [selectedMateria, setSelectedMateria] = useState(materias[0]);
+  const [selectedDateOption, setSelectedDateOption] = useState(dateOptions[0]);
+  const [customDate, setCustomDate] = useState("");
 
   const filteredAlumnos = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return alumnos;
-    return alumnos.filter(
-      (a) =>
+    return alumnos.filter((a) => {
+      const matchesQuery =
         a.nombre.toLowerCase().includes(query) ||
-        a.matricula.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+        a.matricula.toLowerCase().includes(query);
+      const matchesGroup =
+        selectedGroup === groups[0] || a.grupo === selectedGroup;
+      const matchesMateria =
+        selectedMateria === materias[0] || a.materia === selectedMateria;
+      return matchesQuery && matchesGroup && matchesMateria;
+    });
+  }, [searchQuery, selectedGroup, selectedMateria]);
 
   const counts = useMemo(() => {
     const values = Object.values(attendance);
@@ -50,10 +131,6 @@ function ControlAsistencias() {
           <h2>Control de Asistencias</h2>
           <p>Registra la asistencia diaria de tus alumnos</p>
         </div>
-        <button type="button" className="btn-primary">
-          <Plus size={16} />
-          Nueva Sesión
-        </button>
       </div>
 
       <div className="filter-card">
@@ -63,21 +140,27 @@ function ControlAsistencias() {
             <span>Filtrar por:</span>
           </div>
 
-          <div className="filter-select">
-            <span>Todos los grupos</span>
-            <ChevronDown size={14} color="#8b94a8" />
-          </div>
+          <FilterSelect
+            value={selectedGroup}
+            options={groups}
+            onChange={setSelectedGroup}
+            ariaLabel="Seleccionar grupo"
+          />
 
-          <div className="filter-select">
-            <span>Todas las materias</span>
-            <ChevronDown size={14} color="#8b94a8" />
-          </div>
+          <FilterSelect
+            value={selectedMateria}
+            options={materias}
+            onChange={setSelectedMateria}
+            ariaLabel="Seleccionar materia"
+          />
 
-          <div className="filter-select filter-date">
-            <Calendar size={14} color="#8b94a8" />
-            <span>Hoy — 09/06/2026</span>
-            <ChevronDown size={14} color="#8b94a8" />
-          </div>
+          <FilterSelect
+            value={selectedDateOption}
+            options={dateOptions}
+            onChange={setSelectedDateOption}
+            icon={<Calendar size={14} color="#8b94a8" />}
+            ariaLabel="Seleccionar fecha"
+          />
 
           <div className="filter-search">
             <Search size={14} color="#8b94a8" />
@@ -89,6 +172,18 @@ function ControlAsistencias() {
             />
           </div>
         </div>
+
+        {selectedDateOption === "Personalizada" && (
+          <div className="custom-date-row">
+            <label htmlFor="customDate">Selecciona la fecha que quieras</label>
+            <input
+              id="customDate"
+              type="date"
+              value={customDate}
+              onChange={(e) => setCustomDate(e.target.value)}
+            />
+          </div>
+        )}
       </div>
 
       <div className="attendance-summary">
