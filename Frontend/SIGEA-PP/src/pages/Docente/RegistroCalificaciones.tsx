@@ -4,6 +4,7 @@ import {
   Settings,
   ChevronDown,
   TrendingUp,
+  Download,
   Save,
   Trash2,
   Edit3,
@@ -88,7 +89,6 @@ const rubricaInicial: RubricaItem[] = [
 
 function RegistroCalificaciones() {
   const groupOptions = [
-    "Todos los grupos",
     "Grupo A",
     "Grupo B",
     "Grupo C",
@@ -395,6 +395,10 @@ function RegistroCalificaciones() {
             {alumnos.length} alumnos · Parcial {parcialActivo}
           </span>
           <div className="footer-actions">
+            <button type="button" className="btn-outline">
+              <Download size={16} />
+              Exportar
+            </button>
             <button type="button" className="btn-primary">
               <Save size={16} />
               Guardar Registro
