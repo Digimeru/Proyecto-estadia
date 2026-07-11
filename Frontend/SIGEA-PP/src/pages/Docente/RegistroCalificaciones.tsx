@@ -22,6 +22,57 @@ type RubricaItem = {
 
 type Calificacion = Record<string, number>;
 
+type FilterSelectProps = {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  icon?: React.ReactNode;
+  ariaLabel: string;
+};
+
+function FilterSelect({ value, options, onChange, icon, ariaLabel }: FilterSelectProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="filter-select" style={{ position: "relative" }}>
+      <button
+        type="button"
+        aria-label={ariaLabel}
+        onClick={() => setOpen((current) => !current)}
+        className="filter-select-button"
+      >
+        {icon}
+        <span>{value}</span>
+        <ChevronDown
+          size={14}
+          color="#8b94a8"
+          style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}
+        />
+      </button>
+      {open && (
+        <>
+          <div className="select-overlay" onClick={() => setOpen(false)} />
+          <div className="select-dropdown">
+            {options.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  onChange(option);
+                  setOpen(false);
+                }}
+                className={`select-dropdown-item${option === value ? " selected" : ""}`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 const parciales: { id: Parcial; label: string }[] = [
   { id: "1P", label: "1P — Primer Parcial" },
   { id: "2P", label: "2P — Segundo Parcial" },
@@ -36,6 +87,15 @@ const rubricaInicial: RubricaItem[] = [
 ];
 
 function RegistroCalificaciones() {
+  const groupOptions = [
+    "Todos los grupos",
+    "Grupo A",
+    "Grupo B",
+    "Grupo C",
+    "Grupo D",
+    "Grupo E",
+  ];
+  const [selectedGroup, setSelectedGroup] = useState(groupOptions[0]);
   const [parcialActivo, setParcialActivo] = useState<Parcial>("1P");
   const [calificaciones, setCalificaciones] = useState<Calificacion[]>(
     calificacionesIniciales.map((c) => ({ ...c }))
@@ -134,10 +194,12 @@ function RegistroCalificaciones() {
           <p>Álgebra Lineal — Grupo 3°A</p>
         </div>
         <div className="page-header-actions">
-          <div className="filter-select">
-            <span>Grupo: 3°A</span>
-            <ChevronDown size={14} color="#8b94a8" />
-          </div>
+          <FilterSelect
+            value={selectedGroup}
+            options={groupOptions}
+            onChange={setSelectedGroup}
+            ariaLabel="Seleccionar grupo"
+          />
           <button
             type="button"
             className="btn-outline"
