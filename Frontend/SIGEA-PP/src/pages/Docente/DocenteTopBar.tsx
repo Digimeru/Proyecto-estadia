@@ -1,4 +1,4 @@
-import { Search, Bell } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface DocenteTopBarProps {
   pageTitle: string;
@@ -19,11 +19,6 @@ export function DocenteTopBar({ pageTitle }: DocenteTopBarProps) {
       </div>
 
       <div className="topbar-actions">
-        <div className="notification-bell">
-          <Bell size={18} color="#4a5a7a" />
-          <div className="bell-badge" />
-        </div>
-
         <div className="topbar-user">
           <div className="topbar-avatar">MG</div>
           <div className="topbar-user-info">

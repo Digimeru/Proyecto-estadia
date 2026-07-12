@@ -4,7 +4,7 @@ import logo1 from "../../assets/images/logo1.png";
 
 const navItems = [
   { to: "/docente", label: "Dashboard", icon: LayoutGrid, end: true },
-  { to: "/docente/asistencias", label: "Control de Asistencias", icon: ClipboardList, end: false },
+  { to: "/docente/asistencias", label: "Control de asistencias", icon: ClipboardList, end: false },
   { to: "/docente/calificaciones", label: "Registro de calificación", icon: BookOpen, end: false },
 ];
 
@@ -16,7 +16,9 @@ export function DocenteSidebar() {
       <div>
         <div className="sidebar-logo">
           <div className="sidebar-logo-row">
-            <img src={logo1} alt="DocenSys" className="sidebar-logo-img" />
+            <div className="sidebar-logo-badge">
+              <img src={logo1} alt="DocenSys" className="sidebar-logo-img" />
+            </div>
             <div className="sidebar-logo-text">
               <h1>DocenSys</h1>
               <span>Docente</span>

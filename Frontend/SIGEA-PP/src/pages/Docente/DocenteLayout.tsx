@@ -6,7 +6,7 @@ import { DocenteTopBar } from "./DocenteTopBar";
 
 const pageTitles: Record<string, string> = {
   "/docente": "Dashboard",
-  "/docente/asistencias": "Control de Asistencias",
+  "/docente/asistencias": "Control de asistencias",
   "/docente/calificaciones": "Registro de calificación",
 };
 
