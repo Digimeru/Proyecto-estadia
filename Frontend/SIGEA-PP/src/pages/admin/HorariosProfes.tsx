@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Calendar, Clock, BookOpen, Users, MapPin } from "lucide-react";
 
 const profes = [
@@ -18,10 +18,26 @@ const diaBgs    = ["#eff6ff", "#ecfdf5", "#fffbeb", "#faf5ff", "#fef2f2"];
 export function HorariosProfes() {
   const [selected, setSelected] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [topOffset, setTopOffset] = useState<number>(140);
+  
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const dashboardBody = document.querySelector('.admin-container .dashboard-body');
+    if (dashboardBody) {
+      // page is already inside the dashboard layout which handles scrolling
+      setTopOffset(0);
+      return;
+    }
+    // Try common header selectors, fall back to document body spacing
+    const header = document.querySelector('header, .app-header, .topbar, .navbar, .header');
+    const height = header ? (header as HTMLElement).getBoundingClientRect().height : 140;
+    // add a small extra gap
+    setTopOffset(Math.ceil(height) + 16);
+  }, []);
   const profe = profes.find((p) => p.nomina === selected) ?? null;
 
   return (
-    <div>
+    <div style={{ padding: '24px', paddingTop: topOffset ? `${topOffset}px` : undefined, boxSizing: 'border-box', minHeight: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "24px" }}>
         <div>
           <h2 style={{ color: "#1a2744" }}>Horarios de Docentes</h2>

@@ -4,20 +4,17 @@ export function AdminTopBar({ pageTitle }: { pageTitle: string }) {
   return (
     <header
       style={{
-        position: "fixed",
-        top: 0,
-        right: 0,
-        left: "260px",
-        height: "64px",
+        position: "relative",
+        height: "var(--topbar-height, 64px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 24px",
-        zIndex: 10,
         backgroundColor: "white",
         borderBottom: "1px solid #e8eaf0",
         boxShadow: "0 1px 0 rgba(26,39,68,0.05)",
         boxSizing: "border-box",
+        width: "100%",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>

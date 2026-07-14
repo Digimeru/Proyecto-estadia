@@ -1,5 +1,8 @@
 /* Contenedor Maestro: Pantalla Completa Absoluta */
 .admin-container {
+    /* layout variables: keep sidebar/topbar sizes in sync across components */
+    --sidebar-width: 260px;
+    --topbar-height: 64px;
     position: fixed;
     inset: 0;
     display: flex !important;
@@ -12,7 +15,7 @@
 
 /* --- BARRA LATERAL (SIDEBAR) --- */   
 .admin-container .sidebar {
-    width: 260px;
+    width: var(--sidebar-width);
     background-color: #14192d;
     color: #8b94a8;
     display: flex;
@@ -141,13 +144,13 @@
     justify-content: flex-start !important; /* 🛡️ ANCLA EL CONTENIDO AL TECHO */
     overflow: hidden !important;
     overflow-x: hidden;
-    margin-left: 15rem;
-    width: calc(100vw - 15rem);
+    margin-left: var(--sidebar-width);
+    width: calc(100vw - var(--sidebar-width));
 }
 
 /* BARRA SUPERIOR (TOPBAR) */
 .admin-container .topbar {
-    height: 70px;
+    height: var(--topbar-height);
     background-color: white;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
@@ -233,10 +236,11 @@
     justify-content: flex-start !important; /* 🛡️ OBLIGA A QUE EL SCROLL EMPIECE EN EL TÍTULO */
     align-items: stretch !important;
     gap: 28px !important;
+    /* padding de 32px en los lados; el topbar ahora está en el flujo así que no hace falta offset extra */
     padding: 32px;
     box-sizing: border-box;
-    height: calc(100vh - 70px) !important;
-    max-height: calc(100vh - 70px) !important;
+    height: calc(100vh - var(--topbar-height)) !important;
+    max-height: calc(100vh - var(--topbar-height)) !important;
 }
 
 .admin-container .dashboard-header, 
